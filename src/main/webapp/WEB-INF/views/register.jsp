@@ -17,16 +17,10 @@
     </c:if>
 
     <form method="post" action="${pageContext.request.contextPath}/register">
-        <label for="username">Username</label>
-        <input id="username" name="username" maxlength="50" required value="<c:out value='${username}' />">
-
-        <label for="email">Email</label>
-        <input id="email" name="email" type="email" maxlength="254" required value="<c:out value='${email}' />">
-
-        <label for="password">Password</label>
-        <input id="password" name="password" type="password" minlength="8" required>
-
-        <button type="submit">Register</button>
+        <input name="username" type="text">
+        <input name="email" type="email">
+        <input name="password" type="password">
+        <button type="submit">Create account</button>
     </form>
 
     <p class="hint">Already registered? <a href="${pageContext.request.contextPath}/login">Log in</a></p>

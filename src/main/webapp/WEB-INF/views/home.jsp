@@ -16,7 +16,7 @@
             <p>Signed in as <strong><c:out value="${sessionScope.loggedInUsername}" /></strong></p>
         </div>
         <form method="post" action="${pageContext.request.contextPath}/logout">
-            <button class="secondary" type="submit">Log out</button>
+            <button type="submit">Log out</button>
         </form>
     </header>
 

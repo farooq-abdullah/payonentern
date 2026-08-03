@@ -20,13 +20,8 @@
     </c:if>
 
     <form method="post" action="${pageContext.request.contextPath}/login">
-        <label for="username">Username</label>
-        <input id="username" name="username" required
-               value="<c:out value='${username}' />">
-
-        <label for="password">Password</label>
-        <input id="password" name="password" type="password" required>
-
+        <input name="username" type="text">
+        <input name="password" type="password">
         <button type="submit">Log in</button>
     </form>
 
