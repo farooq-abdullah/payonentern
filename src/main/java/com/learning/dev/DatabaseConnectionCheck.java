@@ -1,23 +1,16 @@
 package com.learning.dev;
 
-import com.learning.util.DatabaseConnection;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import com.learning.util.HibernateUtil;
+import org.hibernate.Session;
 
 public final class DatabaseConnectionCheck {
     private DatabaseConnectionCheck() {
     }
 
-    public static void main(String[] args) throws Exception {
-        try (Connection connection = DatabaseConnection.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT current_user")) {
-
-            resultSet.next();
-            System.out.println("PostgreSQL connection succeeded as " + resultSet.getString(1));
-            System.out.println("Database: " + connection.getMetaData().getDatabaseProductVersion());
+    public static void main(String[] args) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String version = session.createNativeQuery("select version()", String.class).getSingleResult();
+            System.out.println(version);
         }
     }
 }

@@ -15,6 +15,7 @@
         <servlet.version>6.0.0</servlet.version>
         <jstl.version>3.0.1</jstl.version>
         <postgresql.jdbc.version>42.7.13</postgresql.jdbc.version>
+        <hibernate.version>7.4.5.Final</hibernate.version>
     </properties>
 
     <dependencies>
@@ -38,6 +39,11 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.jdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mindrot</groupId>

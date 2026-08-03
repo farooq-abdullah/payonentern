@@ -1,6 +1,6 @@
 package com.learning.servlet;
 
-import com.learning.dao.JdbcUserDao;
+import com.learning.dao.HibernateUserDao;
 import com.learning.dao.UserDao;
 import com.learning.model.User;
 import com.learning.util.PasswordHasher;
@@ -15,7 +15,7 @@ import java.sql.SQLException;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
-    private final UserDao userDao = new JdbcUserDao();
+    private final UserDao userDao = new HibernateUserDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

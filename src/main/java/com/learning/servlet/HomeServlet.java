@@ -1,6 +1,6 @@
 package com.learning.servlet;
 
-import com.learning.dao.JdbcUserDao;
+import com.learning.dao.HibernateUserDao;
 import com.learning.dao.UserDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 @WebServlet("/home")
 public class HomeServlet extends HttpServlet {
-    private final UserDao userDao = new JdbcUserDao();
+    private final UserDao userDao = new HibernateUserDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

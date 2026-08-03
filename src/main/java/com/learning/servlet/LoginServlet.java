@@ -1,6 +1,6 @@
 package com.learning.servlet;
 
-import com.learning.dao.JdbcUserDao;
+import com.learning.dao.HibernateUserDao;
 import com.learning.dao.UserDao;
 import com.learning.model.User;
 import com.learning.util.PasswordHasher;
@@ -20,7 +20,7 @@ public class LoginServlet extends HttpServlet {
     public static final String LOGGED_IN_USER_ID = "loggedInUserId";
     public static final String LOGGED_IN_USERNAME = "loggedInUsername";
 
-    private final UserDao userDao = new JdbcUserDao();
+    private final UserDao userDao = new HibernateUserDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

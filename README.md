@@ -1,3 +1,3 @@
 # User Directory
 
-Servlet and JSP web application with PostgreSQL user registration, authentication, and a protected registered-user list.
+Servlet, JSP, Hibernate, and PostgreSQL web application with user registration, authentication, and a protected registered-user list.
