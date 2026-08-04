@@ -1,7 +1,6 @@
 [CmdletBinding()]
 param(
-    [switch]$RequireDatabase,
-    [switch]$RequireOracleAdmin
+    [switch]$RequireDatabase
 )
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
@@ -38,8 +37,4 @@ if ($RequireDatabase) {
     Assert-ConfiguredValue 'DB_URL'
     Assert-ConfiguredValue 'DB_USER'
     Assert-ConfiguredValue 'DB_PASSWORD'
-}
-
-if ($RequireOracleAdmin) {
-    Assert-ConfiguredValue 'ORACLE_ADMIN_PASSWORD'
 }
