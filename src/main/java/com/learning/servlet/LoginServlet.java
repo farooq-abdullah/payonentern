@@ -20,6 +20,7 @@ import java.util.Optional;
 public class LoginServlet extends HttpServlet {
     public static final String LOGGED_IN_USER_ID = "loggedInUserId";
     public static final String LOGGED_IN_USERNAME = "loggedInUsername";
+    public static final String LOGGED_IN_ROLE = "loggedInRole";
 
     private final UserDao userDao = new HibernateUserDao();
 
@@ -59,6 +60,7 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute(LOGGED_IN_USER_ID, user.getId());
             session.setAttribute(LOGGED_IN_USERNAME, user.getUsername());
+            session.setAttribute(LOGGED_IN_ROLE, user.getRole());
 
             if (user.isMustChangePassword() || PasswordPolicy.isExpired(user)) {
                 response.sendRedirect(request.getContextPath() + "/change-password?required=true");

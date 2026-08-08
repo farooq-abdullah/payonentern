@@ -25,6 +25,15 @@
     <c:if test="${param.message == 'passwordChanged'}">
         <p class="message success">Password changed.</p>
     </c:if>
+    <c:if test="${param.message == 'profileUpdated'}">
+        <p class="message success">User profile updated.</p>
+    </c:if>
+    <c:if test="${param.message == 'passwordReset'}">
+        <p class="message success">Password reset.</p>
+    </c:if>
+    <c:if test="${param.message == 'userDeleted'}">
+        <p class="message success">User deleted.</p>
+    </c:if>
 
     <c:choose>
         <c:when test="${empty users}">
@@ -33,7 +42,10 @@
         <c:otherwise>
             <table>
                 <thead>
-                <tr><th>ID</th><th>Username</th><th>Email</th><th>Created</th></tr>
+                <tr>
+                    <th>ID</th><th>Username</th><th>Email</th><th>Created</th>
+                    <c:if test="${isAdmin}"><th>Actions</th></c:if>
+                </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="user" items="${users}">
@@ -42,6 +54,16 @@
                         <td><c:out value="${user.username}" /></td>
                         <td><c:out value="${user.email}" /></td>
                         <td><c:out value="${user.createdAt}" /></td>
+                        <c:if test="${isAdmin}">
+                            <td class="actions">
+                                <a href="${pageContext.request.contextPath}/edit-user?id=${user.id}">Edit</a>
+                                <a href="${pageContext.request.contextPath}/reset-password?id=${user.id}">Reset password</a>
+                                <form method="post" action="${pageContext.request.contextPath}/delete-user">
+                                    <input name="userId" type="hidden" value="${user.id}">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </c:if>
                     </tr>
                 </c:forEach>
                 </tbody>

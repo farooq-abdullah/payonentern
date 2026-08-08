@@ -42,6 +42,7 @@ public class HomeServlet extends HttpServlet {
                 return;
             }
 
+            request.setAttribute("isAdmin", signedInUser.get().isAdmin());
             request.setAttribute("users", userDao.findAll());
         } catch (SQLException exception) {
             throw new ServletException("Could not load users", exception);

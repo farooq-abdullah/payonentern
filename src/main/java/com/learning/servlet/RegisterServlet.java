@@ -64,6 +64,7 @@ public class RegisterServlet extends HttpServlet {
             user.setUsername(username);
             user.setEmail(email);
             user.setPasswordHash(PasswordHasher.hash(password));
+            user.setRole("USER");
             userDao.create(user);
 
             response.sendRedirect(request.getContextPath() + "/login?registered=true");
