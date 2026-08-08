@@ -4,6 +4,7 @@ import com.learning.dao.HibernateUserDao;
 import com.learning.dao.UserDao;
 import com.learning.model.User;
 import com.learning.util.PasswordHasher;
+import com.learning.util.PasswordPolicy;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -39,8 +40,15 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        if (username.length() > 50 || email.length() > 254 || password.length() < 8) {
-            request.setAttribute("error", "Enter a valid username, email, and password of at least 8 characters.");
+        if (username.length() > 50 || email.length() > 254) {
+            request.setAttribute("error", "Enter a valid username and email.");
+            showForm(request, response);
+            return;
+        }
+
+        String passwordError = PasswordPolicy.validationError(password);
+        if (passwordError != null) {
+            request.setAttribute("error", passwordError);
             showForm(request, response);
             return;
         }
