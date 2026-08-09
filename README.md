@@ -4,6 +4,8 @@ Servlet, JSP, Hibernate, and PostgreSQL web application with user registration, 
 
 Run `database/01-create-users.sql` once when creating the database.
 
+`database/02-user-management.sql` is an optional rerunnable migration for an older database. Its `IF NOT EXISTS` checks prevent errors when a column is already present.
+
 After registering the administrator account, promote it once in PostgreSQL:
 
 ```sql
