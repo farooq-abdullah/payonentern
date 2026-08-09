@@ -23,9 +23,4 @@ EXCEPTION
     WHEN duplicate_object THEN NULL;
 END $$;
 
-CREATE TABLE IF NOT EXISTS password_history (
-    history_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id BIGINT NOT NULL REFERENCES app_users(user_id) ON DELETE CASCADE,
-    password_hash VARCHAR(100) NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+DROP TABLE IF EXISTS password_history;

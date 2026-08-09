@@ -1,7 +1,6 @@
 package com.learning.util;
 
 import com.learning.model.User;
-import com.learning.model.PasswordHistory;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
@@ -25,7 +24,6 @@ public final class HibernateUtil {
         configuration.setProperty(AvailableSettings.HBM2DDL_AUTO, "validate");
         configuration.setProperty(AvailableSettings.SHOW_SQL, "false");
         configuration.addAnnotatedClass(User.class);
-        configuration.addAnnotatedClass(PasswordHistory.class);
         return configuration.buildSessionFactory();
     }
 

@@ -25,5 +25,4 @@ public interface UserDao {
 
     boolean updatePassword(long userId, String passwordHash, boolean mustChangePassword) throws SQLException;
 
-    List<String> findRecentPasswordHashes(long userId, int limit) throws SQLException;
 }

@@ -1,6 +1,5 @@
 package com.learning.dao;
 
-import com.learning.model.PasswordHistory;
 import com.learning.model.User;
 import com.learning.util.HibernateUtil;
 import org.hibernate.HibernateException;
@@ -138,7 +137,6 @@ public class HibernateUserDao implements UserDao {
                 transaction.commit();
                 return false;
             }
-            session.persist(new PasswordHistory(user.getId(), user.getPasswordHash()));
             user.setPasswordHash(passwordHash);
             user.setPasswordChangedAt(LocalDateTime.now());
             user.setMustChangePassword(mustChangePassword);
@@ -146,20 +144,6 @@ public class HibernateUserDao implements UserDao {
             return true;
         } catch (HibernateException exception) {
             rollback(transaction);
-            throw databaseException(exception);
-        }
-    }
-
-    @Override
-    public List<String> findRecentPasswordHashes(long userId, int limit) throws SQLException {
-        try (Session session = sessionFactory.openSession()) {
-            return session.createQuery(
-                            "select history.passwordHash from PasswordHistory history where history.userId = :userId order by history.createdAt desc, history.id desc",
-                            String.class)
-                    .setParameter("userId", userId)
-                    .setMaxResults(limit)
-                    .getResultList();
-        } catch (HibernateException exception) {
             throw databaseException(exception);
         }
     }
