@@ -27,7 +27,6 @@ if (-not (Test-Path -LiteralPath $war)) {
     throw "Build output was not found: $war"
 }
 
-# These are the only deployment targets this script removes.
 if (Test-Path -LiteralPath $deployedWar) {
     Remove-Item -LiteralPath $deployedWar -Force
 }

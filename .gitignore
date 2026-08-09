@@ -1,12 +1,10 @@
 target/
 .env.local
 
-# Eclipse generates these when the Maven project is imported.
 .classpath
 .project
 .settings/
 
-# Editor/OS files
 .vscode/
 .idea/
 *.log
