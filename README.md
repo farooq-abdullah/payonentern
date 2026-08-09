@@ -2,6 +2,8 @@
 
 Servlet, JSP, Hibernate, and PostgreSQL web application with user registration, authentication, and a protected registered-user list.
 
+Run `database/01-create-users.sql` once when creating the database.
+
 After registering the administrator account, promote it once in PostgreSQL:
 
 ```sql
