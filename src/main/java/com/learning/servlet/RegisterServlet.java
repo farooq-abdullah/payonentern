@@ -5,6 +5,7 @@ import com.learning.dao.UserDao;
 import com.learning.model.User;
 import com.learning.util.PasswordHasher;
 import com.learning.util.PasswordPolicy;
+import com.learning.util.UserInputValidator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -34,14 +35,15 @@ public class RegisterServlet extends HttpServlet {
         request.setAttribute("username", username);
         request.setAttribute("email", email);
 
-        if (username.isEmpty() || email.isEmpty() || password == null || password.isBlank()) {
+        if (password == null || password.isBlank()) {
             request.setAttribute("error", "Username, email, and password are required.");
             showForm(request, response);
             return;
         }
 
-        if (username.length() > 50 || email.length() > 254) {
-            request.setAttribute("error", "Enter a valid username and email.");
+        String userInputError = UserInputValidator.validationError(username, email);
+        if (userInputError != null) {
+            request.setAttribute("error", userInputError);
             showForm(request, response);
             return;
         }

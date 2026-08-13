@@ -4,7 +4,6 @@ import com.learning.dao.HibernateUserDao;
 import com.learning.dao.UserDao;
 import com.learning.model.User;
 import com.learning.util.PasswordHasher;
-import com.learning.util.PasswordPolicy;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -61,11 +60,6 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute(LOGGED_IN_USER_ID, user.getId());
             session.setAttribute(LOGGED_IN_USERNAME, user.getUsername());
             session.setAttribute(LOGGED_IN_ROLE, user.getRole());
-
-            if (user.isMustChangePassword() || PasswordPolicy.isExpired(user)) {
-                response.sendRedirect(request.getContextPath() + "/change-password?required=true");
-                return;
-            }
 
             response.sendRedirect(request.getContextPath() + "/home");
         } catch (SQLException exception) {

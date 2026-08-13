@@ -17,8 +17,12 @@
     </c:if>
     <form method="post" action="${pageContext.request.contextPath}/reset-password">
         <input name="userId" type="hidden" value="${user.id}">
-        <input name="newPassword" type="password" placeholder="Temporary password">
-        <input name="confirmation" type="password" placeholder="Confirm temporary password">
+        <input name="newPassword" type="password" placeholder="Temporary password" required minlength="8"
+               pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9 ]).{8,}"
+               title="Use at least 8 characters with uppercase, lowercase, digit, and special characters."
+               autocomplete="new-password">
+        <input name="confirmation" type="password" placeholder="Confirm temporary password"
+               required minlength="8" autocomplete="new-password">
         <button type="submit">Reset password</button>
     </form>
     <p class="hint">The user must change this password after logging in.</p>

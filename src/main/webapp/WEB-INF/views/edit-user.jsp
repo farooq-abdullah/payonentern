@@ -16,8 +16,16 @@
     </c:if>
     <form method="post" action="${pageContext.request.contextPath}/edit-user">
         <input name="userId" type="hidden" value="${user.id}">
-        <input name="username" type="text" value="<c:out value='${user.username}' />">
-        <input name="email" type="email" value="<c:out value='${user.email}' />">
+        <input name="username" type="text" value="<c:out value='${user.username}' />"
+               placeholder="Username" required minlength="3" maxlength="50"
+               pattern="[A-Za-z0-9._-]{3,50}"
+               title="Use 3 to 50 letters, numbers, dots, underscores, or hyphens."
+               autocomplete="username">
+        <input name="email" type="email" value="<c:out value='${user.email}' />"
+               placeholder="Email" required maxlength="254"
+               pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}"
+               title="Enter a valid email address."
+               autocomplete="email">
         <button type="submit">Save changes</button>
     </form>
     <p class="hint"><a href="${pageContext.request.contextPath}/home">Back to users</a></p>

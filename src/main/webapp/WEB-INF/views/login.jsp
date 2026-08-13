@@ -20,8 +20,10 @@
     </c:if>
 
     <form method="post" action="${pageContext.request.contextPath}/login">
-        <input name="username" type="text">
-        <input name="password" type="password">
+        <input name="username" type="text" value="<c:out value='${username}' />"
+               placeholder="Username" required maxlength="50" autocomplete="username">
+        <input name="password" type="password" placeholder="Password"
+               required autocomplete="current-password">
         <button type="submit">Log in</button>
     </form>
 
