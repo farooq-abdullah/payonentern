@@ -17,12 +17,24 @@
     </c:if>
 
     <form method="post" action="${pageContext.request.contextPath}/register">
-        <input name="username" type="text">
-        <input name="email" type="email">
-        <input name="password" type="password">
+        <input name="username" type="text" value="<c:out value='${username}' />"
+               placeholder="Username" required minlength="3" maxlength="50"
+               pattern="[A-Za-z0-9._-]{3,50}"
+               title="Use 3 to 50 letters, numbers, dots, underscores, or hyphens."
+               autocomplete="username">
+        <input name="email" type="email" value="<c:out value='${email}' />"
+               placeholder="Email" required maxlength="254"
+               pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}"
+               title="Enter a valid email address."
+               autocomplete="email">
+        <input name="password" type="password" placeholder="Password" required minlength="8"
+               pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9 ]).{8,}"
+               title="Use at least 8 characters with uppercase, lowercase, digit, and special characters."
+               autocomplete="new-password">
         <button type="submit">Create account</button>
     </form>
 
+    <p class="hint">Passwords need at least 8 characters with uppercase, lowercase, digit, and special characters.</p>
     <p class="hint">Already registered? <a href="${pageContext.request.contextPath}/login">Log in</a></p>
 </main>
 </body>

@@ -16,6 +16,7 @@
         <jstl.version>3.0.1</jstl.version>
         <postgresql.jdbc.version>42.7.13</postgresql.jdbc.version>
         <hibernate.version>7.4.5.Final</hibernate.version>
+        <junit.version>5.13.4</junit.version>
     </properties>
 
     <dependencies>
@@ -49,6 +50,12 @@
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

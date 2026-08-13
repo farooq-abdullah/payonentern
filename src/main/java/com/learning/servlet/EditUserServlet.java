@@ -4,6 +4,7 @@ import com.learning.dao.HibernateUserDao;
 import com.learning.dao.UserDao;
 import com.learning.model.User;
 import com.learning.util.AdminAccess;
+import com.learning.util.UserInputValidator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -56,9 +57,14 @@ public class EditUserServlet extends HttpServlet {
         String username = trimmedParameter(request, "username");
         String email = trimmedParameter(request, "email");
 
-        if (userId == null || username.isEmpty() || email.isEmpty()
-                || username.length() > 50 || email.length() > 254) {
-            request.setAttribute("error", "Enter a valid username and email.");
+        if (userId == null) {
+            response.sendRedirect(request.getContextPath() + "/home");
+            return;
+        }
+
+        String userInputError = UserInputValidator.validationError(username, email);
+        if (userInputError != null) {
+            request.setAttribute("error", userInputError);
             request.setAttribute("user", formUser(userId, username, email));
             showForm(request, response);
             return;

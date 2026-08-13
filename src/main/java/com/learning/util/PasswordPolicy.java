@@ -3,6 +3,7 @@ package com.learning.util;
 import com.learning.model.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public final class PasswordPolicy {
     private static final int MINIMUM_LENGTH = 8;
@@ -32,6 +33,16 @@ public final class PasswordPolicy {
     public static boolean isExpired(User user) {
         return user.getPasswordChangedAt() == null
                 || user.getPasswordChangedAt().isBefore(LocalDateTime.now().minusDays(EXPIRY_DAYS));
+    }
+
+    public static boolean matchesCurrentOrRecentPassword(
+            String password, User user, List<String> recentPasswordHashes) {
+        if (PasswordHasher.matches(password, user.getPasswordHash())) {
+            return true;
+        }
+
+        return recentPasswordHashes.stream()
+                .anyMatch(hash -> PasswordHasher.matches(password, hash));
     }
 
 }

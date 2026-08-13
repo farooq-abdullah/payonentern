@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 @WebServlet("/reset-password")
@@ -83,8 +84,9 @@ public class ResetPasswordServlet extends HttpServlet {
                 return;
             }
 
-            if (PasswordHasher.matches(newPassword, user.getPasswordHash())) {
-                error(request, response, "New password must be different from the user's current password.");
+            List<String> recentHashes = userDao.findRecentPasswordHashes(userId, 4);
+            if (PasswordPolicy.matchesCurrentOrRecentPassword(newPassword, user, recentHashes)) {
+                error(request, response, "New password cannot match the user's current or previous four passwords.");
                 return;
             }
 

@@ -8,3 +8,13 @@ CREATE TABLE app_users (
     password_changed_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     must_change_password BOOLEAN NOT NULL DEFAULT FALSE
 );
+
+CREATE TABLE password_history (
+    history_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES app_users(user_id) ON DELETE CASCADE,
+    password_hash VARCHAR(100) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX shortcutforgettinghistory
+    ON password_history (user_id, history_id DESC);
