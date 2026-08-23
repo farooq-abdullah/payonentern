@@ -1,8 +1,12 @@
 package com.learning.servlet;
 
+import com.learning.dao.HibernateRoleDao;
 import com.learning.dao.HibernateUserDao;
+import com.learning.dao.RoleDao;
 import com.learning.dao.UserDao;
+import com.learning.model.Role;
 import com.learning.model.User;
+import com.learning.util.FullAdminProtection;
 import com.learning.util.PasswordHasher;
 import com.learning.util.PasswordPolicy;
 import com.learning.util.UserInputValidator;
@@ -14,10 +18,12 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Optional;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
     private final UserDao userDao = new HibernateUserDao();
+    private final RoleDao roleDao = new HibernateRoleDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -66,7 +72,13 @@ public class RegisterServlet extends HttpServlet {
             user.setUsername(username);
             user.setEmail(email);
             user.setPasswordHash(PasswordHasher.hash(password));
-            user.setRole("USER");
+            Optional<Role> role = userDao.countAll() == 0
+                    ? FullAdminProtection.findFullAdministratorRole(roleDao)
+                    : roleDao.findDefaultRole();
+            if (role.isEmpty()) {
+                throw new ServletException("No role is available for new users.");
+            }
+            user.setRole(role.get());
             userDao.create(user);
 
             response.sendRedirect(request.getContextPath() + "/login?registered=true");

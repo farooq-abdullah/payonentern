@@ -4,7 +4,9 @@ import com.learning.dao.HibernateUserDao;
 import com.learning.dao.UserDao;
 import com.learning.model.User;
 import com.learning.util.PasswordHasher;
+import com.learning.util.PermissionAccess;
 import com.learning.util.PasswordPolicy;
+import com.learning.util.Permissions;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -24,12 +26,18 @@ public class ChangePasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if (!PermissionAccess.require(request, response, Permissions.CHANGE_OWN_PASSWORD)) {
+            return;
+        }
         showForm(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if (!PermissionAccess.require(request, response, Permissions.CHANGE_OWN_PASSWORD)) {
+            return;
+        }
         Long userId = loggedInUserId(request);
         String currentPassword = request.getParameter("currentPassword");
         String newPassword = request.getParameter("newPassword");

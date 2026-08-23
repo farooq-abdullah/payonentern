@@ -24,7 +24,10 @@ import java.util.Optional;
         "/change-password",
         "/edit-user",
         "/delete-user",
-        "/reset-password"
+        "/reset-password",
+        "/roles",
+        "/edit-role",
+        "/delete-role"
 })
 public class ProtectedEndpointFilter implements Filter {
     private final UserDao userDao = new HibernateUserDao();

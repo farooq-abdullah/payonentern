@@ -20,7 +20,12 @@
         </form>
     </header>
 
-    <p><a class="button" href="${pageContext.request.contextPath}/change-password">Change password</a></p>
+    <c:if test="${canChangeOwnPassword}">
+        <p><a class="button" href="${pageContext.request.contextPath}/change-password">Change password</a></p>
+    </c:if>
+    <c:if test="${canManageRoles}">
+        <p><a class="button" href="${pageContext.request.contextPath}/roles">Manage roles</a></p>
+    </c:if>
 
     <c:if test="${param.message == 'passwordChanged'}">
         <p class="message success">Password changed.</p>
@@ -34,6 +39,9 @@
     <c:if test="${param.message == 'userDeleted'}">
         <p class="message success">User deleted.</p>
     </c:if>
+    <c:if test="${param.message == 'lastAdminProtected'}">
+        <p class="message error">The last user with full administrative permissions cannot be deleted.</p>
+    </c:if>
 
     <c:choose>
         <c:when test="${empty users}">
@@ -43,8 +51,8 @@
             <table>
                 <thead>
                 <tr>
-                    <th>ID</th><th>Username</th><th>Email</th><th>Created</th>
-                    <c:if test="${isAdmin}"><th>Actions</th></c:if>
+                    <th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Created</th>
+                    <c:if test="${canEditUser or canResetPassword or canDeleteUser}"><th>Actions</th></c:if>
                 </tr>
                 </thead>
                 <tbody>
@@ -53,15 +61,22 @@
                         <td><c:out value="${user.id}" /></td>
                         <td><c:out value="${user.username}" /></td>
                         <td><c:out value="${user.email}" /></td>
+                        <td><c:out value="${user.role.name}" /></td>
                         <td><c:out value="${user.createdAt}" /></td>
-                        <c:if test="${isAdmin}">
+                        <c:if test="${canEditUser or canResetPassword or canDeleteUser}">
                             <td class="actions">
-                                <a href="${pageContext.request.contextPath}/edit-user?id=${user.id}">Edit</a>
-                                <a href="${pageContext.request.contextPath}/reset-password?id=${user.id}">Reset password</a>
-                                <form method="post" action="${pageContext.request.contextPath}/delete-user">
-                                    <input name="userId" type="hidden" value="${user.id}">
-                                    <button type="submit">Delete</button>
-                                </form>
+                                <c:if test="${canEditUser}">
+                                    <a href="${pageContext.request.contextPath}/edit-user?id=${user.id}">Edit</a>
+                                </c:if>
+                                <c:if test="${canResetPassword}">
+                                    <a href="${pageContext.request.contextPath}/reset-password?id=${user.id}">Reset password</a>
+                                </c:if>
+                                <c:if test="${canDeleteUser}">
+                                    <form method="post" action="${pageContext.request.contextPath}/delete-user">
+                                        <input name="userId" type="hidden" value="${user.id}">
+                                        <button type="submit">Delete</button>
+                                    </form>
+                                </c:if>
                             </td>
                         </c:if>
                     </tr>

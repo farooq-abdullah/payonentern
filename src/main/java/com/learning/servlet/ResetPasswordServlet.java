@@ -3,9 +3,10 @@ package com.learning.servlet;
 import com.learning.dao.HibernateUserDao;
 import com.learning.dao.UserDao;
 import com.learning.model.User;
-import com.learning.util.AdminAccess;
+import com.learning.util.PermissionAccess;
 import com.learning.util.PasswordHasher;
 import com.learning.util.PasswordPolicy;
+import com.learning.util.Permissions;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -24,7 +25,7 @@ public class ResetPasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (!AdminAccess.requireAdmin(request, response)) {
+        if (!PermissionAccess.require(request, response, Permissions.RESET_PASSWORD)) {
             return;
         }
 
@@ -50,7 +51,7 @@ public class ResetPasswordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (!AdminAccess.requireAdmin(request, response)) {
+        if (!PermissionAccess.require(request, response, Permissions.RESET_PASSWORD)) {
             return;
         }
 

@@ -3,6 +3,8 @@ package com.learning.servlet;
 import com.learning.dao.HibernateUserDao;
 import com.learning.dao.UserDao;
 import com.learning.model.User;
+import com.learning.util.PermissionAccess;
+import com.learning.util.Permissions;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,9 +21,17 @@ public class HomeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if (!PermissionAccess.require(request, response, Permissions.VIEW_USERS)) {
+            return;
+        }
         try {
-            request.setAttribute("isAdmin", request.getAttribute("signedInUser") instanceof User user
-                    && user.isAdmin());
+            User signedInUser = (User) request.getAttribute("signedInUser");
+            request.setAttribute("canChangeOwnPassword", PermissionAccess.hasPermission(
+                    signedInUser, Permissions.CHANGE_OWN_PASSWORD));
+            request.setAttribute("canEditUser", PermissionAccess.hasPermission(signedInUser, Permissions.EDIT_USER));
+            request.setAttribute("canDeleteUser", PermissionAccess.hasPermission(signedInUser, Permissions.DELETE_USER));
+            request.setAttribute("canResetPassword", PermissionAccess.hasPermission(signedInUser, Permissions.RESET_PASSWORD));
+            request.setAttribute("canManageRoles", PermissionAccess.hasPermission(signedInUser, Permissions.MANAGE_ROLES));
             request.setAttribute("users", userDao.findAll());
         } catch (SQLException exception) {
             throw new ServletException("Could not load users", exception);

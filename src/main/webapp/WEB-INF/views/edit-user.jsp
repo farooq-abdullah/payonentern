@@ -26,6 +26,14 @@
                pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}"
                title="Enter a valid email address."
                autocomplete="email">
+        <label for="roleId">Role</label>
+        <select id="roleId" name="roleId" required>
+            <c:forEach var="role" items="${roles}">
+                <option value="${role.id}" <c:if test="${user.role.id eq role.id}">selected</c:if>>
+                    <c:out value="${role.name}" />
+                </option>
+            </c:forEach>
+        </select>
         <button type="submit">Save changes</button>
     </form>
     <p class="hint"><a href="${pageContext.request.contextPath}/home">Back to users</a></p>

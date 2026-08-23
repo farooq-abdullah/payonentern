@@ -25,7 +25,10 @@ body {
 
 form { display: grid; gap: .75rem; }
 label { font-weight: 650; }
-input { padding: .7rem; border: 1px solid #aab4c0; border-radius: 6px; font: inherit; }
+input, select { padding: .7rem; border: 1px solid #aab4c0; border-radius: 6px; font: inherit; }
+fieldset { border: 1px solid #d9dfe6; border-radius: 6px; display: grid; gap: .5rem; padding: .75rem; }
+.checkbox-label { display: flex; align-items: center; gap: .5rem; font-weight: 400; }
+.checkbox-label input { margin: 0; }
 
 button, .button {
     padding: .7rem 1rem;

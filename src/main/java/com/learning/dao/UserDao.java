@@ -19,9 +19,13 @@ public interface UserDao {
 
     List<User> findAll() throws SQLException;
 
+    long countAll() throws SQLException;
+
     boolean updateProfile(User user) throws SQLException;
 
     boolean deleteById(long userId) throws SQLException;
+
+    long countByRoleId(long roleId) throws SQLException;
 
     boolean updatePassword(long userId, String passwordHash, boolean mustChangePassword) throws SQLException;
 

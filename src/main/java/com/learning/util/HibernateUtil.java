@@ -1,6 +1,8 @@
 package com.learning.util;
 
 import com.learning.model.PasswordHistory;
+import com.learning.model.Permission;
+import com.learning.model.Role;
 import com.learning.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AvailableSettings;
@@ -26,6 +28,8 @@ public final class HibernateUtil {
         configuration.setProperty(AvailableSettings.SHOW_SQL, "false");
         configuration.addAnnotatedClass(User.class);
         configuration.addAnnotatedClass(PasswordHistory.class);
+        configuration.addAnnotatedClass(Role.class);
+        configuration.addAnnotatedClass(Permission.class);
         return configuration.buildSessionFactory();
     }
 

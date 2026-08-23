@@ -1,6 +1,7 @@
 package com.learning.dao;
 
 import com.learning.model.PasswordHistory;
+import com.learning.model.Role;
 import com.learning.model.User;
 import com.learning.util.HibernateUtil;
 import org.hibernate.HibernateException;
@@ -21,6 +22,7 @@ public class HibernateUserDao implements UserDao {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
+            user.setRole(session.getReference(Role.class, user.getRole().getId()));
             session.persist(user);
             transaction.commit();
         } catch (HibernateException exception) {
@@ -90,6 +92,15 @@ public class HibernateUserDao implements UserDao {
     }
 
     @Override
+    public long countAll() throws SQLException {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("select count(user) from User user", Long.class).getSingleResult();
+        } catch (HibernateException exception) {
+            throw databaseException(exception);
+        }
+    }
+
+    @Override
     public boolean updateProfile(User user) throws SQLException {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
@@ -101,6 +112,7 @@ public class HibernateUserDao implements UserDao {
             }
             managedUser.setUsername(user.getUsername());
             managedUser.setEmail(user.getEmail());
+            managedUser.setRole(session.getReference(Role.class, user.getRole().getId()));
             transaction.commit();
             return true;
         } catch (HibernateException exception) {
@@ -124,6 +136,18 @@ public class HibernateUserDao implements UserDao {
             return true;
         } catch (HibernateException exception) {
             rollback(transaction);
+            throw databaseException(exception);
+        }
+    }
+
+    @Override
+    public long countByRoleId(long roleId) throws SQLException {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery(
+                            "select count(user) from User user where user.role.id = :roleId", Long.class)
+                    .setParameter("roleId", roleId)
+                    .getSingleResult();
+        } catch (HibernateException exception) {
             throw databaseException(exception);
         }
     }
