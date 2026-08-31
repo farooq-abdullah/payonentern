@@ -8,6 +8,7 @@ import com.learning.model.User;
 import com.learning.util.FullAdminProtection;
 import com.learning.util.PermissionAccess;
 import com.learning.util.Permissions;
+import com.learning.service.AuditService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,6 +24,7 @@ import java.util.Optional;
 public class DeleteUserServlet extends HttpServlet {
     private final UserDao userDao = new HibernateUserDao();
     private final RoleDao roleDao = new HibernateRoleDao();
+    private final AuditService auditService = new AuditService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -50,6 +52,8 @@ public class DeleteUserServlet extends HttpServlet {
                 return;
             }
 
+            auditService.record((User) request.getAttribute("signedInUser"), "USER_DELETED", "USER", userId,
+                    found.get().getUsername(), true, null);
             userDao.deleteById(userId);
 
             HttpSession session = request.getSession(false);

@@ -22,6 +22,8 @@ body {
 
 .wide-card { width: min(90vw, 900px); }
 .page-header, .actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.filters { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin: 1rem 0; }
+.pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
 
 form { display: grid; gap: .75rem; }
 label { font-weight: 650; }

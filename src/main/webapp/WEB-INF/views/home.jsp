@@ -26,6 +26,7 @@
     <c:if test="${canManageRoles}">
         <p><a class="button" href="${pageContext.request.contextPath}/roles">Manage roles</a></p>
     </c:if>
+    <c:if test="${canViewAuditLog}"><p><a class="button" href="${pageContext.request.contextPath}/audit-log">View audit log</a></p></c:if>
 
     <c:if test="${param.message == 'passwordChanged'}">
         <p class="message success">Password changed.</p>
@@ -39,10 +40,17 @@
     <c:if test="${param.message == 'userDeleted'}">
         <p class="message success">User deleted.</p>
     </c:if>
+    <c:if test="${param.message == 'userUnlocked'}"><p class="message success">Account unlocked.</p></c:if>
     <c:if test="${param.message == 'lastAdminProtected'}">
         <p class="message error">The last user with full administrative permissions cannot be deleted.</p>
     </c:if>
 
+    <form class="filters" method="get" action="${pageContext.request.contextPath}/home">
+        <input name="search" value="<c:out value='${param.search}' />" placeholder="Search username or email">
+        <button type="submit">Search</button>
+    </form>
+
+    <c:set var="nextDir" value="${param.dir == 'asc' ? 'desc' : 'asc'}" />
     <c:choose>
         <c:when test="${empty users}">
             <p class="message">No users are registered yet.</p>
@@ -51,8 +59,11 @@
             <table>
                 <thead>
                 <tr>
-                    <th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Created</th>
-                    <c:if test="${canEditUser or canResetPassword or canDeleteUser}"><th>Actions</th></c:if>
+                    <th><a href="${pageContext.request.contextPath}/home?search=${param.search}&sort=id&dir=${nextDir}">ID</a></th>
+                    <th><a href="${pageContext.request.contextPath}/home?search=${param.search}&sort=username&dir=${nextDir}">Username</a></th>
+                    <th><a href="${pageContext.request.contextPath}/home?search=${param.search}&sort=email&dir=${nextDir}">Email</a></th><th>Role</th>
+                    <th><a href="${pageContext.request.contextPath}/home?search=${param.search}&sort=created&dir=${nextDir}">Created</a></th>
+                    <c:if test="${canEditUser or canResetPassword or canDeleteUser or canUnlockUser}"><th>Actions</th></c:if>
                 </tr>
                 </thead>
                 <tbody>
@@ -63,7 +74,7 @@
                         <td><c:out value="${user.email}" /></td>
                         <td><c:out value="${user.role.name}" /></td>
                         <td><c:out value="${user.createdAt}" /></td>
-                        <c:if test="${canEditUser or canResetPassword or canDeleteUser}">
+                        <c:if test="${canEditUser or canResetPassword or canDeleteUser or canUnlockUser}">
                             <td class="actions">
                                 <c:if test="${canEditUser}">
                                     <a href="${pageContext.request.contextPath}/edit-user?id=${user.id}">Edit</a>
@@ -77,6 +88,9 @@
                                         <button type="submit">Delete</button>
                                     </form>
                                 </c:if>
+                                <c:if test="${canUnlockUser and user.lockedUntil != null}">
+                                    <form method="post" action="${pageContext.request.contextPath}/unlock-user"><input name="userId" type="hidden" value="${user.id}"><button type="submit">Unlock</button></form>
+                                </c:if>
                             </td>
                         </c:if>
                     </tr>
@@ -85,6 +99,11 @@
             </table>
         </c:otherwise>
     </c:choose>
+    <c:if test="${userPage.totalPages > 1}"><nav class="pagination">
+        <c:if test="${userPage.page > 1}"><a href="${pageContext.request.contextPath}/home?search=${param.search}&sort=${param.sort}&dir=${param.dir}&page=${userPage.page - 1}">Previous</a></c:if>
+        <span>Page <c:out value="${userPage.page}" /> of <c:out value="${userPage.totalPages}" /> (<c:out value="${userPage.totalUsers}" /> users)</span>
+        <c:if test="${userPage.page < userPage.totalPages}"><a href="${pageContext.request.contextPath}/home?search=${param.search}&sort=${param.sort}&dir=${param.dir}&page=${userPage.page + 1}">Next</a></c:if>
+    </nav></c:if>
 </main>
 </body>
 </html>

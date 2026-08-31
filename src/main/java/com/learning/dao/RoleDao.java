@@ -13,6 +13,8 @@ public interface RoleDao {
 
     Optional<Role> findById(long roleId) throws SQLException;
 
+    Optional<Role> findByName(String roleName) throws SQLException;
+
     Optional<Role> findDefaultRole() throws SQLException;
 
     List<Permission> findAllFunctions() throws SQLException;

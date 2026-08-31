@@ -36,6 +36,17 @@ public class HibernateRoleDao implements RoleDao {
     }
 
     @Override
+    public Optional<Role> findByName(String roleName) throws SQLException {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("from Role role where role.name = :roleName", Role.class)
+                    .setParameter("roleName", roleName)
+                    .uniqueResultOptional();
+        } catch (HibernateException exception) {
+            throw databaseException(exception);
+        }
+    }
+
+    @Override
     public Optional<Role> findDefaultRole() throws SQLException {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery("from Role role where role.defaultRole = true", Role.class)

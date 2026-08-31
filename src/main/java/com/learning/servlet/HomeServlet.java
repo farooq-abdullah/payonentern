@@ -1,8 +1,8 @@
 package com.learning.servlet;
 
-import com.learning.dao.HibernateUserDao;
-import com.learning.dao.UserDao;
+import com.learning.dao.UserPage;
 import com.learning.model.User;
+import com.learning.service.UserDirectoryService;
 import com.learning.util.PermissionAccess;
 import com.learning.util.Permissions;
 import jakarta.servlet.ServletException;
@@ -16,7 +16,7 @@ import java.sql.SQLException;
 
 @WebServlet("/home")
 public class HomeServlet extends HttpServlet {
-    private final UserDao userDao = new HibernateUserDao();
+    private final UserDirectoryService userDirectoryService = new UserDirectoryService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -31,8 +31,13 @@ public class HomeServlet extends HttpServlet {
             request.setAttribute("canEditUser", PermissionAccess.hasPermission(signedInUser, Permissions.EDIT_USER));
             request.setAttribute("canDeleteUser", PermissionAccess.hasPermission(signedInUser, Permissions.DELETE_USER));
             request.setAttribute("canResetPassword", PermissionAccess.hasPermission(signedInUser, Permissions.RESET_PASSWORD));
+            request.setAttribute("canUnlockUser", PermissionAccess.hasPermission(signedInUser, Permissions.UNLOCK_USER));
             request.setAttribute("canManageRoles", PermissionAccess.hasPermission(signedInUser, Permissions.MANAGE_ROLES));
-            request.setAttribute("users", userDao.findAll());
+            request.setAttribute("canViewAuditLog", PermissionAccess.hasPermission(signedInUser, Permissions.VIEW_AUDIT_LOG));
+            UserPage userPage = userDirectoryService.findUsers(request.getParameter("search"), request.getParameter("sort"),
+                    request.getParameter("dir"), request.getParameter("page"));
+            request.setAttribute("userPage", userPage);
+            request.setAttribute("users", userPage.users());
         } catch (SQLException exception) {
             throw new ServletException("Could not load users", exception);
         }

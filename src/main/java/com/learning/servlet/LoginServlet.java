@@ -1,9 +1,7 @@
 package com.learning.servlet;
 
-import com.learning.dao.HibernateUserDao;
-import com.learning.dao.UserDao;
-import com.learning.model.User;
-import com.learning.util.PasswordHasher;
+import com.learning.service.AuthenticationResult;
+import com.learning.service.AuthenticationService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,15 +10,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Optional;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     public static final String LOGGED_IN_USER_ID = "loggedInUserId";
     public static final String LOGGED_IN_USERNAME = "loggedInUsername";
 
-    private final UserDao userDao = new HibernateUserDao();
+    private final AuthenticationService authenticationService = new AuthenticationService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -47,19 +43,24 @@ public class LoginServlet extends HttpServlet {
         }
 
         try {
-            Optional<User> found = userDao.findByUsername(username.trim());
-            if (found.isEmpty() || !PasswordHasher.matches(password, found.get().getPasswordHash())) {
+            AuthenticationResult result = authenticationService.authenticate(username.trim(), password);
+            if (result.status() == AuthenticationResult.Status.LOCKED) {
+                request.setAttribute("error", "This account is temporarily locked after too many failed attempts. Ask an administrator to unlock it or try again later.");
+                request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
+                return;
+            }
+            if (result.status() != AuthenticationResult.Status.SUCCESS) {
                 request.setAttribute("error", "Invalid username or password.");
                 request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
                 return;
             }
 
-            User user = found.get();
+            var user = result.user();
             HttpSession session = request.getSession();
             session.setAttribute(LOGGED_IN_USER_ID, user.getId());
             session.setAttribute(LOGGED_IN_USERNAME, user.getUsername());
             response.sendRedirect(request.getContextPath() + "/home");
-        } catch (SQLException exception) {
+        } catch (java.sql.SQLException exception) {
             throw new ServletException("Could not log in", exception);
         }
     }

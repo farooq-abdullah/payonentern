@@ -38,6 +38,15 @@ public class User {
     @Column(name = "must_change_password", nullable = false)
     private boolean mustChangePassword;
 
+    @Column(name = "failed_login_count", nullable = false)
+    private int failedLoginCount;
+
+    @Column(name = "failed_login_window_started_at")
+    private LocalDateTime failedLoginWindowStartedAt;
+
+    @Column(name = "locked_until")
+    private LocalDateTime lockedUntil;
+
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
@@ -107,6 +116,30 @@ public class User {
 
     public void setMustChangePassword(boolean mustChangePassword) {
         this.mustChangePassword = mustChangePassword;
+    }
+
+    public int getFailedLoginCount() {
+        return failedLoginCount;
+    }
+
+    public void setFailedLoginCount(int failedLoginCount) {
+        this.failedLoginCount = failedLoginCount;
+    }
+
+    public LocalDateTime getFailedLoginWindowStartedAt() {
+        return failedLoginWindowStartedAt;
+    }
+
+    public void setFailedLoginWindowStartedAt(LocalDateTime failedLoginWindowStartedAt) {
+        this.failedLoginWindowStartedAt = failedLoginWindowStartedAt;
+    }
+
+    public LocalDateTime getLockedUntil() {
+        return lockedUntil;
+    }
+
+    public void setLockedUntil(LocalDateTime lockedUntil) {
+        this.lockedUntil = lockedUntil;
     }
 
     public Role getRole() {

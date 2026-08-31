@@ -15,6 +15,9 @@
     <c:if test="${param.registered == 'true'}">
         <p class="message success">Account created. You can log in now.</p>
     </c:if>
+    <c:if test="${param.passwordReset == 'true'}">
+        <p class="message success">Password reset. You can log in now.</p>
+    </c:if>
     <c:if test="${not empty error}">
         <p class="message error"><c:out value="${error}" /></p>
     </c:if>
@@ -28,6 +31,7 @@
     </form>
 
     <p class="hint">Need an account? <a href="${pageContext.request.contextPath}/register">Register</a></p>
+    <p class="hint"><a href="${pageContext.request.contextPath}/forgot-password">Forgot your password?</a></p>
 </main>
 </body>
 </html>

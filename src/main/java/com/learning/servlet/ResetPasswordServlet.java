@@ -1,11 +1,11 @@
 package com.learning.servlet;
 
-import com.learning.dao.HibernateUserDao;
 import com.learning.dao.UserDao;
+import com.learning.dao.HibernateUserDao;
 import com.learning.model.User;
+import com.learning.service.PasswordManagementService;
+import com.learning.service.PasswordOperationResult;
 import com.learning.util.PermissionAccess;
-import com.learning.util.PasswordHasher;
-import com.learning.util.PasswordPolicy;
 import com.learning.util.Permissions;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,12 +15,12 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Optional;
 
 @WebServlet("/reset-password")
 public class ResetPasswordServlet extends HttpServlet {
     private final UserDao userDao = new HibernateUserDao();
+    private final PasswordManagementService passwordManagementService = new PasswordManagementService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -69,29 +69,12 @@ public class ResetPasswordServlet extends HttpServlet {
             User user = found.get();
             request.setAttribute("user", user);
 
-            if (newPassword == null || newPassword.isBlank()
-                    || confirmation == null || confirmation.isBlank()) {
-                error(request, response, "New password and confirmation are required.");
+            PasswordOperationResult result = passwordManagementService.resetByAdministrator(
+                    (User) request.getAttribute("signedInUser"), userId, newPassword, confirmation);
+            if (!result.successful()) {
+                error(request, response, result.error());
                 return;
             }
-            if (!newPassword.equals(confirmation)) {
-                error(request, response, "New password and confirmation do not match.");
-                return;
-            }
-
-            String passwordError = PasswordPolicy.validationError(newPassword);
-            if (passwordError != null) {
-                error(request, response, passwordError);
-                return;
-            }
-
-            List<String> recentHashes = userDao.findRecentPasswordHashes(userId, 4);
-            if (PasswordPolicy.matchesCurrentOrRecentPassword(newPassword, user, recentHashes)) {
-                error(request, response, "New password cannot match the user's current or previous four passwords.");
-                return;
-            }
-
-            userDao.updatePassword(userId, PasswordHasher.hash(newPassword), true);
             response.sendRedirect(request.getContextPath() + "/home?message=passwordReset");
         } catch (SQLException exception) {
             throw new ServletException("Could not reset password", exception);

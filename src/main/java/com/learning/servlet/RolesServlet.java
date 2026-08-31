@@ -5,6 +5,8 @@ import com.learning.dao.RoleDao;
 import com.learning.util.PermissionAccess;
 import com.learning.util.Permissions;
 import com.learning.util.RoleInputValidator;
+import com.learning.service.AuditService;
+import com.learning.model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,6 +23,7 @@ import java.util.Set;
 @WebServlet("/roles")
 public class RolesServlet extends HttpServlet {
     private final RoleDao roleDao = new HibernateRoleDao();
+    private final AuditService auditService = new AuditService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -51,6 +54,9 @@ public class RolesServlet extends HttpServlet {
 
         try {
             roleDao.create(roleName, functionCodes);
+            Long roleId = roleDao.findByName(roleName).map(role -> role.getId()).orElse(null);
+            auditService.record((User) request.getAttribute("signedInUser"), "ROLE_CREATED", "ROLE", roleId, roleName,
+                    true, "Assigned " + functionCodes.size() + " functions");
             response.sendRedirect(request.getContextPath() + "/roles?message=roleCreated");
         } catch (SQLException exception) {
             throw new ServletException("Could not create role", exception);

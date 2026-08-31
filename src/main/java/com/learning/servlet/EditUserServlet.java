@@ -10,6 +10,7 @@ import com.learning.util.FullAdminProtection;
 import com.learning.util.PermissionAccess;
 import com.learning.util.Permissions;
 import com.learning.util.UserInputValidator;
+import com.learning.service.AuditService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -26,6 +27,7 @@ import java.util.Set;
 public class EditUserServlet extends HttpServlet {
     private final UserDao userDao = new HibernateUserDao();
     private final RoleDao roleDao = new HibernateRoleDao();
+    private final AuditService auditService = new AuditService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -105,6 +107,8 @@ public class EditUserServlet extends HttpServlet {
 
             User user = formUser(userId, username, email, foundRole.get());
             userDao.updateProfile(user);
+            auditService.record((User) request.getAttribute("signedInUser"), "USER_UPDATED", "USER", userId,
+                    username, true, "Role set to " + foundRole.get().getName());
 
             HttpSession session = request.getSession(false);
             if (session != null && userId.equals(session.getAttribute(LoginServlet.LOGGED_IN_USER_ID))) {

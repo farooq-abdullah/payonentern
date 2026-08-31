@@ -1,6 +1,8 @@
 package com.learning.util;
 
 import com.learning.model.PasswordHistory;
+import com.learning.model.PasswordResetToken;
+import com.learning.model.AuditLogEntry;
 import com.learning.model.Permission;
 import com.learning.model.Role;
 import com.learning.model.User;
@@ -30,6 +32,8 @@ public final class HibernateUtil {
         configuration.addAnnotatedClass(PasswordHistory.class);
         configuration.addAnnotatedClass(Role.class);
         configuration.addAnnotatedClass(Permission.class);
+        configuration.addAnnotatedClass(PasswordResetToken.class);
+        configuration.addAnnotatedClass(AuditLogEntry.class);
         return configuration.buildSessionFactory();
     }
 

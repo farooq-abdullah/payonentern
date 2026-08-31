@@ -15,9 +15,13 @@ public interface UserDao {
 
     Optional<User> findByUsername(String username) throws SQLException;
 
+    Optional<User> findByEmail(String email) throws SQLException;
+
     Optional<User> findById(long userId) throws SQLException;
 
     List<User> findAll() throws SQLException;
+
+    UserPage findPage(UserPageRequest request) throws SQLException;
 
     long countAll() throws SQLException;
 
@@ -30,4 +34,11 @@ public interface UserDao {
     boolean updatePassword(long userId, String passwordHash, boolean mustChangePassword) throws SQLException;
 
     List<String> findRecentPasswordHashes(long userId, int limit) throws SQLException;
+
+    void updateLoginFailure(long userId, int count, java.time.LocalDateTime windowStartedAt,
+                            java.time.LocalDateTime lockedUntil) throws SQLException;
+
+    void clearLoginFailures(long userId) throws SQLException;
+
+    boolean unlock(long userId) throws SQLException;
 }

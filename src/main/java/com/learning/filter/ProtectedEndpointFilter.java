@@ -24,7 +24,9 @@ import java.util.Optional;
         "/change-password",
         "/edit-user",
         "/delete-user",
+        "/unlock-user",
         "/reset-password",
+        "/audit-log",
         "/roles",
         "/edit-role",
         "/delete-role"

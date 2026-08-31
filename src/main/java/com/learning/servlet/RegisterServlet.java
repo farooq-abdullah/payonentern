@@ -10,6 +10,7 @@ import com.learning.util.FullAdminProtection;
 import com.learning.util.PasswordHasher;
 import com.learning.util.PasswordPolicy;
 import com.learning.util.UserInputValidator;
+import com.learning.service.AuditService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -24,6 +25,7 @@ import java.util.Optional;
 public class RegisterServlet extends HttpServlet {
     private final UserDao userDao = new HibernateUserDao();
     private final RoleDao roleDao = new HibernateRoleDao();
+    private final AuditService auditService = new AuditService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -80,6 +82,8 @@ public class RegisterServlet extends HttpServlet {
             }
             user.setRole(role.get());
             userDao.create(user);
+            auditService.record(user, "USER_CREATED", "USER", user.getId(), user.getUsername(), true,
+                    "Self registration with role " + role.get().getName());
 
             response.sendRedirect(request.getContextPath() + "/login?registered=true");
         } catch (SQLException exception) {

@@ -26,7 +26,10 @@ CREATE TABLE app_users (
     role_id BIGINT NOT NULL REFERENCES roles(role_id),
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     password_changed_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    must_change_password BOOLEAN NOT NULL DEFAULT FALSE
+    must_change_password BOOLEAN NOT NULL DEFAULT FALSE,
+    failed_login_count INTEGER NOT NULL DEFAULT 0,
+    failed_login_window_started_at TIMESTAMPTZ,
+    locked_until TIMESTAMPTZ
 );
 
 CREATE TABLE password_history (
@@ -39,13 +42,44 @@ CREATE TABLE password_history (
 CREATE INDEX shortcutforgettinghistory
     ON password_history (user_id, history_id DESC);
 
+CREATE TABLE password_reset_tokens (
+    token_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES app_users(user_id) ON DELETE CASCADE,
+    token_hash VARCHAR(64) NOT NULL UNIQUE,
+    expires_at TIMESTAMPTZ NOT NULL,
+    used_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX password_reset_tokens_lookup_idx
+    ON password_reset_tokens (token_hash, expires_at)
+    WHERE used_at IS NULL;
+
+CREATE TABLE audit_log (
+    audit_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    actor_user_id BIGINT REFERENCES app_users(user_id) ON DELETE SET NULL,
+    actor_username VARCHAR(50),
+    action VARCHAR(50) NOT NULL,
+    target_type VARCHAR(50) NOT NULL,
+    target_id BIGINT,
+    target_label VARCHAR(254),
+    successful BOOLEAN NOT NULL,
+    details VARCHAR(500),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX audit_log_created_at_idx ON audit_log (created_at DESC, audit_id DESC);
+CREATE INDEX audit_log_action_idx ON audit_log (action, created_at DESC);
+
 INSERT INTO system_functions (function_code) VALUES
     ('VIEW_USERS'),
     ('EDIT_USER'),
     ('DELETE_USER'),
     ('RESET_PASSWORD'),
     ('MANAGE_ROLES'),
-    ('CHANGE_OWN_PASSWORD');
+    ('CHANGE_OWN_PASSWORD'),
+    ('UNLOCK_USER'),
+    ('VIEW_AUDIT_LOG');
 
 INSERT INTO roles (role_name, is_default) VALUES
     ('Administrator', FALSE),

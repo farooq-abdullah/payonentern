@@ -9,6 +9,7 @@ import com.learning.util.FullAdminProtection;
 import com.learning.util.PermissionAccess;
 import com.learning.util.Permissions;
 import com.learning.util.RoleInputValidator;
+import com.learning.service.AuditService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -24,6 +25,7 @@ import java.util.Set;
 public class EditRoleServlet extends HttpServlet {
     private final RoleDao roleDao = new HibernateRoleDao();
     private final UserDao userDao = new HibernateUserDao();
+    private final AuditService auditService = new AuditService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -95,6 +97,8 @@ public class EditRoleServlet extends HttpServlet {
             }
 
             roleDao.update(roleId, roleName, functionCodes);
+            auditService.record((com.learning.model.User) request.getAttribute("signedInUser"), "ROLE_UPDATED", "ROLE", roleId,
+                    roleName, true, "Assigned " + functionCodes.size() + " functions");
             response.sendRedirect(request.getContextPath() + "/roles?message=roleUpdated");
         } catch (SQLException exception) {
             throw new ServletException("Could not update role", exception);
