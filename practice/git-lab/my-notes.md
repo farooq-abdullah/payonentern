@@ -1,9 +1,11 @@
-# My Git practice notes
+ # My Git practice notes
 
 Complete these answers during Exercise 1, then commit this file.
 
 1. What does `git status` tell me?
-   - Answer:
+   - Answer:i donnnn know
+
+
 
 2. What is the difference between `git add` and `git commit`?
    - Answer:
