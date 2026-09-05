@@ -8,7 +8,7 @@ Complete these answers during Exercise 1, then commit this file.
 
 
 2. What is the difference between `git add` and `git commit`?
-   - Answer:
+   - Answer:Answer: git add places selected changes in the staging area.
 
 3. Why should I run `git diff --staged` before committing?
    - Answer:
