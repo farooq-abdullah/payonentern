@@ -1,5 +1,3 @@
-
-
 \# Practice release checklist
 
 
@@ -13,4 +11,6 @@
 \- \[ ] Review the staged Git changes.
 
 \- \[ ] Confirm that no secrets are included.
+
+\[ ] Create a version tag after final verification.
 

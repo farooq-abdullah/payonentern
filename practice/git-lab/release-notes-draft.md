@@ -3,7 +3,7 @@
 This is deliberately a draft for Git practice. Edit it during a later exercise.
 
 ## Draft changes
-
+- Prepared the practice release checklist.
 - Added a Git and GitHub crash course.
 - Added a notes file for making a safe first commit.
 
