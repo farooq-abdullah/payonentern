@@ -1,14 +1,10 @@
 package com.learning.servlet;
 
-import com.learning.dao.HibernateRoleDao;
-import com.learning.dao.HibernateUserDao;
-import com.learning.dao.RoleDao;
-import com.learning.dao.UserDao;
 import com.learning.model.User;
-import com.learning.util.FullAdminProtection;
+import com.learning.service.ServiceResult;
+import com.learning.service.UserManagementService;
 import com.learning.util.PermissionAccess;
 import com.learning.util.Permissions;
-import com.learning.service.AuditService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,21 +14,15 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Optional;
 
 @WebServlet("/delete-user")
 public class DeleteUserServlet extends HttpServlet {
-    private final UserDao userDao = new HibernateUserDao();
-    private final RoleDao roleDao = new HibernateRoleDao();
-    private final AuditService auditService = new AuditService();
+    private final UserManagementService userManagementService = new UserManagementService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (!PermissionAccess.require(request, response, Permissions.DELETE_USER)) {
-            return;
-        }
-
+        if (!PermissionAccess.require(request, response, Permissions.DELETE_USER)) return;
         Long userId = parseId(request.getParameter("userId"));
         if (userId == null) {
             response.sendRedirect(request.getContextPath() + "/home");
@@ -40,21 +30,12 @@ public class DeleteUserServlet extends HttpServlet {
         }
 
         try {
-            Optional<User> found = userDao.findById(userId);
-            if (found.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/home");
+            ServiceResult<User> result = userManagementService.delete((User) request.getAttribute("signedInUser"), userId);
+            if (!result.successful()) {
+                String message = result.status() == ServiceResult.Status.PROTECTED ? "lastAdminProtected" : "userNotFound";
+                response.sendRedirect(request.getContextPath() + "/home?message=" + message);
                 return;
             }
-
-            if (FullAdminProtection.isFullAdministrator(found.get().getRole(), roleDao.findAllFunctionCodes())
-                    && FullAdminProtection.countFullAdministrators(roleDao, userDao) <= 1) {
-                response.sendRedirect(request.getContextPath() + "/home?message=lastAdminProtected");
-                return;
-            }
-
-            auditService.record((User) request.getAttribute("signedInUser"), "USER_DELETED", "USER", userId,
-                    found.get().getUsername(), true, null);
-            userDao.deleteById(userId);
 
             HttpSession session = request.getSession(false);
             if (session != null && userId.equals(session.getAttribute(LoginServlet.LOGGED_IN_USER_ID))) {
@@ -62,7 +43,6 @@ public class DeleteUserServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/login");
                 return;
             }
-
             response.sendRedirect(request.getContextPath() + "/home?message=userDeleted");
         } catch (SQLException exception) {
             throw new ServletException("Could not delete user", exception);

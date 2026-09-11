@@ -1,13 +1,11 @@
 package com.learning.servlet;
 
-import com.learning.dao.HibernateRoleDao;
-import com.learning.dao.HibernateUserDao;
-import com.learning.dao.RoleDao;
-import com.learning.dao.UserDao;
 import com.learning.model.Role;
+import com.learning.model.User;
+import com.learning.service.RoleManagementService;
+import com.learning.service.ServiceResult;
 import com.learning.util.PermissionAccess;
 import com.learning.util.Permissions;
-import com.learning.service.AuditService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,45 +14,28 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Optional;
 
 @WebServlet("/delete-role")
 public class DeleteRoleServlet extends HttpServlet {
-    private final RoleDao roleDao = new HibernateRoleDao();
-    private final UserDao userDao = new HibernateUserDao();
-    private final AuditService auditService = new AuditService();
+    private final RoleManagementService roleManagementService = new RoleManagementService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (!PermissionAccess.require(request, response, Permissions.MANAGE_ROLES)) {
-            return;
-        }
-
+        if (!PermissionAccess.require(request, response, Permissions.MANAGE_ROLES)) return;
         Long roleId = parseId(request.getParameter("roleId"));
         if (roleId == null) {
             response.sendRedirect(request.getContextPath() + "/roles");
             return;
         }
-
         try {
-            Optional<Role> found = roleDao.findById(roleId);
-            if (found.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/roles");
+            ServiceResult<Role> result = roleManagementService.delete((User) request.getAttribute("signedInUser"), roleId);
+            if (!result.successful()) {
+                String message = result.status() == ServiceResult.Status.CONFLICT ? "roleInUse"
+                        : result.status() == ServiceResult.Status.PROTECTED ? "defaultRoleProtected" : "roleNotFound";
+                response.sendRedirect(request.getContextPath() + "/roles?message=" + message);
                 return;
             }
-            if (found.get().isDefaultRole()) {
-                response.sendRedirect(request.getContextPath() + "/roles?message=defaultRoleProtected");
-                return;
-            }
-            if (userDao.countByRoleId(roleId) > 0) {
-                response.sendRedirect(request.getContextPath() + "/roles?message=roleInUse");
-                return;
-            }
-
-            auditService.record((com.learning.model.User) request.getAttribute("signedInUser"), "ROLE_DELETED", "ROLE", roleId,
-                    found.get().getName(), true, null);
-            roleDao.deleteById(roleId);
             response.sendRedirect(request.getContextPath() + "/roles?message=roleDeleted");
         } catch (SQLException exception) {
             throw new ServletException("Could not delete role", exception);
