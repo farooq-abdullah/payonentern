@@ -13,3 +13,7 @@ Roles and their functions are stored in the database. The administrator can mana
 The user list is searched, sorted, and paged on the server. Audit records are visible to roles with `VIEW_AUDIT_LOG`, while locked accounts can be unlocked by roles with `UNLOCK_USER`.
 
 Password reset emails require these environment variables in addition to the database variables: `MAIL_HOST`, `MAIL_PORT` (defaults to `587`), `MAIL_FROM`, `MAIL_USERNAME`, `MAIL_PASSWORD`, and `MAIL_STARTTLS` (defaults to `true`). A reset link expires after 15 minutes, is single-use, and only its SHA-256 hash is stored in the database.
+
+When using the REST reset endpoint, also set `PASSWORD_RESET_CLIENT_URL` to the Angular page that will receive the reset token (for example, `http://localhost:4200/reset-password`).
+
+The application also exposes its service layer through a session-based JSON REST API for the future Angular client. See [REST API documentation](docs/rest-api.md).

@@ -54,11 +54,11 @@ public class ForgotPasswordService {
     }
 
     public PasswordOperationResult resetPassword(String rawToken, String newPassword, String confirmation) throws SQLException {
-        if (rawToken == null || rawToken.isBlank()) return PasswordOperationResult.failure("This reset link is invalid or expired.");
+        if (rawToken == null || rawToken.isBlank()) return PasswordOperationResult.invalidToken("This reset link is invalid or expired.");
         Optional<PasswordResetToken> token = tokenDao.findValidByHash(ResetTokenHasher.hash(rawToken));
-        if (token.isEmpty()) return PasswordOperationResult.failure("This reset link is invalid or expired.");
+        if (token.isEmpty()) return PasswordOperationResult.invalidToken("This reset link is invalid or expired.");
         Optional<User> found = userDao.findById(token.get().getUserId());
-        if (found.isEmpty()) return PasswordOperationResult.failure("This reset link is invalid or expired.");
+        if (found.isEmpty()) return PasswordOperationResult.invalidToken("This reset link is invalid or expired.");
         User user = found.get();
         if (newPassword == null || newPassword.isBlank() || confirmation == null || confirmation.isBlank()) {
             return PasswordOperationResult.failure("New password and confirmation are required.");
@@ -71,7 +71,7 @@ public class ForgotPasswordService {
             return PasswordOperationResult.failure("New password cannot match your current or previous four passwords.");
         }
         Optional<User> updated = tokenDao.consumeAndUpdatePassword(ResetTokenHasher.hash(rawToken), PasswordHasher.hash(newPassword));
-        if (updated.isEmpty()) return PasswordOperationResult.failure("This reset link is invalid or expired.");
+        if (updated.isEmpty()) return PasswordOperationResult.invalidToken("This reset link is invalid or expired.");
         auditService.record(updated.get(), "PASSWORD_RESET_SELF_SERVICE", "USER", updated.get().getId(),
                 updated.get().getUsername(), true, null);
         return PasswordOperationResult.success();

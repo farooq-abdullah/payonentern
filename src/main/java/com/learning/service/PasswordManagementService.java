@@ -32,7 +32,7 @@ public class PasswordManagementService {
             return PasswordOperationResult.failure("New password and confirmation do not match.");
         }
         Optional<User> found = userDao.findById(userId);
-        if (found.isEmpty()) return PasswordOperationResult.failure("Your account no longer exists.");
+        if (found.isEmpty()) return PasswordOperationResult.notFound("Your account no longer exists.");
         User user = found.get();
         if (!PasswordHasher.matches(currentPassword, user.getPasswordHash())) {
             auditService.record(user, "PASSWORD_CHANGE_FAILED", "USER", userId, user.getUsername(), false,
@@ -49,7 +49,7 @@ public class PasswordManagementService {
     public PasswordOperationResult resetByAdministrator(User actor, long userId, String newPassword,
                                                          String confirmation) throws SQLException {
         Optional<User> found = userDao.findById(userId);
-        if (found.isEmpty()) return PasswordOperationResult.failure("User was not found.");
+        if (found.isEmpty()) return PasswordOperationResult.notFound("User was not found.");
         User target = found.get();
         if (blank(newPassword) || blank(confirmation)) {
             return PasswordOperationResult.failure("New password and confirmation are required.");
